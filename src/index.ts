@@ -73,14 +73,16 @@ class TablerIconsManager {
 
 		try {
 			const response = await axios.get(icon.url, { responseType: "text" });
-			const svgContent = response.data;
+			let svgContent = response.data;
 
 			// Remove width="24" and height="24" attributes
-			let cleanedSvgContent = svgContent.replace(/width="24"/g, "");
-			cleanedSvgContent = cleanedSvgContent.replace(/height="24"/g, "");
+			svgContent = svgContent.replace(/width="24"/g, "").replace(/height="24"/g, "");
+
+			// Remove empty lines
+			svgContent = svgContent.replace(/^\s*[\r\n]/gm, "");
 
 			const filePath = path.join(this.cacheDir, `${icon.type}-${icon.name}.svg`);
-			await fs.writeFile(filePath, cleanedSvgContent);
+			await fs.writeFile(filePath, svgContent);
 			console.log(`Downloaded: ${icon.name}`);
 		} catch (error) {
 			this.handleError(error);
